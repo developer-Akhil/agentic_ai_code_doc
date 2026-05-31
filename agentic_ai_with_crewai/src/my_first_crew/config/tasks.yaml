@@ -1,0 +1,295 @@
+# tasks.yaml — Campaign Intelligence Crew
+
+# TASK 1: Market Research
+#   Agent  : market_researcher
+#   Context: none (this is the starting point)
+#   Feeds  : strategy_task, qa_review_task
+
+research_task:
+  description: >
+    Conduct targeted market research for {product_name}, described as:
+    "{product_description}"
+
+    This product is launching in {current_year} to the following market:
+    {target_market}
+
+    Deliver EXACTLY these 4 research sections. Each must contain
+    specific, named details — no vague observations allowed.
+
+    ─────────────────────────────────────────────────────────
+    SECTION 1 — BUYER PERSONAS (deliver exactly 2)
+    ─────────────────────────────────────────────────────────
+    For EACH persona provide:
+    • Job title and seniority level
+    • Company size and industry sub-segment
+    • The 3 most painful daily frustrations relevant to this product
+    • What they currently use to address this problem (tool or process)
+    • Why that current solution fails them at a specific moment
+    • What a successful outcome looks like for them in concrete terms
+
+    ─────────────────────────────────────────────────────────
+    SECTION 2 — COMPETITIVE LANDSCAPE (deliver exactly 3 competitors)
+    ─────────────────────────────────────────────────────────
+    For EACH competitor provide:
+    • Company name and their primary positioning claim (in quotes)
+    • One specific, observable weakness in their product or messaging
+    • The exact opportunity that weakness creates for {product_name}
+
+    ─────────────────────────────────────────────────────────
+    SECTION 3 — MARKET TIMING
+    ─────────────────────────────────────────────────────────
+    Name 2 specific forces — trends, regulatory shifts, behavioral changes,
+    or economic pressures — making this problem MORE urgent in {current_year}
+    than it was 2 years ago. Be specific. Name the force and explain its impact.
+
+    ─────────────────────────────────────────────────────────
+    SECTION 4 — WINNING MESSAGE TERRITORY
+    ─────────────────────────────────────────────────────────
+    Based on your research: what is the single messaging angle that
+    NO major competitor currently owns, that {product_name} could
+    authentically claim, and that the Persona 1 buyer would immediately
+    recognize as true to their experience?
+    Explain WHY this territory is unoccupied and WHY it will resonate.
+
+    ⚠️  FAILURE MODE: Generic findings ("buyers want to save time")
+    will cause the strategy agent to produce generic strategy, which will
+    cause the copywriter to produce generic copy, which will fail the
+    quality review. Be specific at every point.
+
+  expected_output: >
+    A structured research brief with 4 clearly separated sections using the
+    exact headers: BUYER PERSONAS, COMPETITIVE LANDSCAPE, MARKET TIMING,
+    WINNING MESSAGE TERRITORY.
+    Every section contains named specifics — job titles, company names,
+    tool names, quoted positioning claims, concrete failure moments.
+    No section uses the words "efficiency," "streamline," or "empower"
+    without immediately naming the specific metric or behavior they refer to.
+  agent: market_researcher
+
+
+# TASK 2: Campaign Strategy
+#   Agent  : campaign_strategist
+#   Context: research_task (receives full research brief)
+#   Feeds  : copy_task, qa_review_task
+strategy_task:
+  description: >
+    Using the market research brief provided in your context, build a
+    focused campaign strategy for {product_name}.
+
+    RULE: Every strategic recommendation must cite a specific finding
+    from the research brief. If you cannot trace a recommendation to
+    a research insight, do not include it.
+
+    Deliver EXACTLY these 5 strategic decisions:
+
+    ─────────────────────────────────────────────────────────
+    DECISION 1 — POSITIONING STATEMENT
+    ─────────────────────────────────────────────────────────
+    Complete this template precisely:
+    "For [specific persona from research], {product_name} is the
+    [category name] that [specific, measurable benefit] because
+    [proof point drawn from research]."
+    No generic category names ("solution," "platform," "tool").
+    The benefit must be specific enough that a competitor could NOT say it.
+
+    ─────────────────────────────────────────────────────────
+    DECISION 2 — PRIMARY MESSAGE PILLAR
+    ─────────────────────────────────────────────────────────
+    The single most important thing the campaign must communicate.
+    State it in one sentence. Then answer: why does this beat every
+    alternative message you considered? Cite the research finding
+    that makes this the right choice over other options.
+
+    ─────────────────────────────────────────────────────────
+    DECISION 3 — SECONDARY MESSAGES (exactly 2)
+    ─────────────────────────────────────────────────────────
+    Two supporting points that reinforce — not repeat — the primary message.
+    Each must address a different concern the buyer has.
+    Each must be traceable to a specific research insight.
+
+    ─────────────────────────────────────────────────────────
+    DECISION 4 — CHANNEL PRIORITY RANKING
+    ─────────────────────────────────────────────────────────
+    Rank EACH of these 5 channels (1 = highest priority):
+    LinkedIn, Email Outreach, Content/SEO, Paid Search, Community/Slack Groups
+    For each: rank, one-sentence rationale citing a persona or research insight,
+    and one concrete first action to take in week 1.
+
+    ─────────────────────────────────────────────────────────
+    DECISION 5 — 4-WEEK LAUNCH NARRATIVE ARC
+    ─────────────────────────────────────────────────────────
+    How does the campaign story unfold across 4 weeks?
+    Week 1: [focus and tone]
+    Week 2: [focus and tone shift]
+    Week 3: [focus and tone shift]
+    Week 4: [focus and tone shift]
+    Each week must have a distinct emphasis that builds on the previous.
+
+    ⚠️  FAILURE MODE: Strategy that could apply to any product in this
+    category will fail the quality review. Every decision must be specific
+    to {product_name} and traceable to the research provided.
+
+  expected_output: >
+    A campaign strategy document with 5 numbered sections using the exact
+    headers: POSITIONING STATEMENT, PRIMARY MESSAGE PILLAR, SECONDARY MESSAGES,
+    CHANNEL PRIORITY RANKING, 4-WEEK LAUNCH NARRATIVE ARC.
+    Every recommendation cites a specific research finding.
+    The positioning statement follows the template exactly.
+    Channel ranking includes all 5 channels with rationale and first action.
+  agent: campaign_strategist
+  context:
+    - research_task
+
+
+# TASK 3: Campaign Copy Creation
+#   Agent  : content_copywriter
+#   Context: research_task + strategy_task (full pipeline context)
+#   Output : CampaignReport Pydantic model (set in crew.py)
+#   Also   : markdown=True, output_file for the final report
+copy_task:
+  description: >
+    Using BOTH the market research brief AND the campaign strategy in your
+    context, write all launch copy for {product_name}.
+
+    RULE: Read the positioning statement and primary message pillar before
+    writing a single word. Every copy element must reflect that positioning.
+    Copy that ignores the strategy will be flagged in quality review.
+
+    Deliver EXACTLY these 6 copy elements:
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 1 — TAGLINE
+    ─────────────────────────────────────────────────────────
+    Write exactly 2 options. Maximum 8 words each.
+    Must own the WINNING MESSAGE TERRITORY from the research.
+    Must be benefit-driven — NOT feature-driven, NOT product-name-led.
+    Mark one as RECOMMENDED with a one-sentence explanation of why.
+    Banned words: revolutionary, game-changing, next-generation, powerful,
+    seamless, effortless, leverage, streamline, transform, empower.
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 2 — HERO HEADLINE (landing page)
+    ─────────────────────────────────────────────────────────
+    Maximum 12 words. Leads with the buyer's pain, not the product name.
+    Must be specific enough that only {product_name} could say it.
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 3 — HERO SUBHEADLINE
+    ─────────────────────────────────────────────────────────
+    1-2 sentences. Expands the headline. Names the specific outcome
+    the buyer gets and the mechanism that delivers it.
+    Must include at least one specific, concrete detail from the research.
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 4 — LINKEDIN AD COPY
+    ─────────────────────────────────────────────────────────
+    4 sentences maximum. Structure: Hook (buyer pain) → Problem
+    (why current solutions fail) → Solution ({product_name} mechanism)
+    → Call to Action (specific, low-friction).
+    Written for Persona 1 from the research. Use their language.
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 5 — EMAIL SUBJECT LINES (exactly 5)
+    ─────────────────────────────────────────────────────────
+    One each of: curiosity angle, pain angle, benefit angle,
+    social proof angle, direct question angle.
+    Each under 50 characters. No clickbait. No ALL CAPS.
+    Must sound like a message from a trusted colleague.
+
+    ─────────────────────────────────────────────────────────
+    ELEMENT 6 — ONE-LINE VALUE PROPOSITION
+    ─────────────────────────────────────────────────────────
+    Under 20 words. Structure: {product_name} helps [who] [do what]
+    so they can [outcome] — without [the trade-off they fear].
+
+    ⚠️  FAILURE MODE: Generic copy ("Solve your biggest challenges,"
+    "The platform built for teams like yours") will fail quality review
+    with a score below 6. Write as if the quality analyst will
+    read every word against the research and strategy documents.
+
+  expected_output: >
+    A complete campaign copy package with all 6 elements using exact headers:
+    TAGLINE (2 options, 1 recommended), HERO HEADLINE, HERO SUBHEADLINE,
+    LINKEDIN AD COPY, EMAIL SUBJECT LINES (5 labeled by angle), VALUE PROPOSITION.
+    Each element is specific, immediately usable, and traceable to
+    the positioning in the strategy document.
+  agent: content_copywriter
+  context:
+    - research_task
+    - strategy_task
+  markdown: true
+  output_file: output/campaign_report.md
+
+
+# TASK 4: Quality Review (NEW)
+#   Agent  : campaign_qa_analyst
+#   Context: strategy_task + copy_task (reviews both outputs)
+#   Output : QualityReport Pydantic model (set in crew.py)
+qa_review_task:
+  description: >
+    You are the final quality checkpoint before {product_name} campaign launch.
+    Review the campaign strategy and copy provided in your context.
+    Score the campaign on 4 dimensions and deliver a launch readiness verdict.
+
+    ─────────────────────────────────────────────────────────
+    DIMENSION 1 — RESEARCH SPECIFICITY (score 1-10)
+    ─────────────────────────────────────────────────────────
+    Does the research contain named personas with specific frustrations?
+    Named competitors with specific weaknesses?
+    A clearly articulated, unclaimed message territory?
+    10 = every finding is specific and named, zero generic observations
+    1  = all findings are generic ("businesses want efficiency")
+
+    ─────────────────────────────────────────────────────────
+    DIMENSION 2 — STRATEGY DIFFERENTIATION (score 1-10)
+    ─────────────────────────────────────────────────────────
+    Could the biggest competitor in this market use this exact positioning?
+    Is the positioning statement specific and template-complete?
+    Are channel recommendations tied to specific research insights?
+    10 = positioning is uncopyable by any competitor
+    1  = positioning could apply to any product in the category
+
+    ─────────────────────────────────────────────────────────
+    DIMENSION 3 — COPY QUALITY (score 1-10)
+    ─────────────────────────────────────────────────────────
+    Does the tagline own the winning message territory?
+    Is the hero headline leading with buyer pain (not product name)?
+    Are email subjects specific and human-sounding?
+    Does any copy use banned generic language?
+    10 = every copy element is specific, human, and immediately usable
+    1  = copy is generic and interchangeable with competitors
+
+    ─────────────────────────────────────────────────────────
+    DIMENSION 4 — STRATEGY-TO-COPY ALIGNMENT (score 1-10)
+    ─────────────────────────────────────────────────────────
+    Does the copy reflect the positioning statement from strategy?
+    Does the copy lead with the primary message pillar?
+    Does the ad copy speak to the right persona from the research?
+    10 = copy is a precise execution of strategy, fully traceable
+    1  = copy appears disconnected from the strategy document
+
+    ─────────────────────────────────────────────────────────
+    OVERALL ASSESSMENT
+    ─────────────────────────────────────────────────────────
+    Calculate the average score across all 4 dimensions.
+    Based on the average:
+    • 8.5-10.0  → LAUNCH READY
+    • 7.0-8.4   → LAUNCH WITH MINOR REVISIONS
+    • 5.0-6.9   → REVISE BEFORE LAUNCH
+    • Below 5.0 → DO NOT LAUNCH — REBUILD REQUIRED
+
+    Identify the ONE highest-impact improvement:
+    The single change that would most improve the overall campaign quality.
+    Be specific: name what to change, why it matters, and what better looks like.
+
+  expected_output: >
+    A quality review report with: scores for all 4 dimensions (each with
+    a 2-sentence justification), an overall average score, a launch readiness
+    verdict using the exact labels above, and one specific highest-impact
+    improvement recommendation. Scored sections use headers:
+    RESEARCH SPECIFICITY, STRATEGY DIFFERENTIATION, COPY QUALITY,
+    STRATEGY-TO-COPY ALIGNMENT, OVERALL VERDICT, HIGHEST-IMPACT IMPROVEMENT.
+  agent: campaign_qa_analyst
+  context:
+    - strategy_task
+    - copy_task

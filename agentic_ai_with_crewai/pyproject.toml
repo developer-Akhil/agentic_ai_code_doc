@@ -1,0 +1,27 @@
+[project]
+name = "my_first_crew"
+version = "0.1.0"
+description = "Multi-Agent Product Launch Campaign Intelligence System — Module 3 Capstone"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[anthropic,google-genai,tools]==1.9.3",
+]
+
+[project.scripts]
+my_first_crew = "my_first_crew.main:run"
+run_crew      = "my_first_crew.main:run"
+run_batch     = "my_first_crew.main:run_batch"
+train         = "my_first_crew.main:train"
+replay        = "my_first_crew.main:replay"
+test          = "my_first_crew.main:test"
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/my_first_crew"]
+
+[tool.crewai]
+type = "crew"
