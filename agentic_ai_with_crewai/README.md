@@ -8,13 +8,6 @@
 A **4-agent AI system** that generates a complete, self-reviewed product launch
 campaign by coordinating specialized agents in a sequential pipeline:
 
-```
-Market Researcher → Campaign Strategist → Content Copywriter → QA Analyst
-        ↓                   ↓                    ↓                  ↓
-  Research Brief      Campaign Strategy     Full Copy Package   Quality Scores
-  (Gemini Flash)     (Claude Sonnet)       (Claude Haiku)     (Claude Haiku)
-```
-
 **Input:** Product name, description, target market
 
 **Output:**
@@ -22,6 +15,106 @@ Market Researcher → Campaign Strategist → Content Copywriter → QA Analyst
 - `QualityReport` — 4-dimension scores, overall score, launch readiness verdict
 - `output/campaign_report.md` — full markdown report
 - `output/campaign_run.json` — complete structured JSON
+
+**Agent 1: Market Researcher**\
+**Job**: Research the market.
+
+It finds:
+- Who the customers are
+- Their problems
+- Competitors
+- Market trends
+- Unique opportunities
+
+**Output**: A research report.
+
+**Agent 2: Campaign Strategist**\
+**Job**: Create a marketing strategy.
+
+It reads the research from Agent 1 and decides:
+- Positioning statement
+- Key marketing messages
+- Channel strategy
+- Competitive differentiation
+
+**Output**: A campaign strategy.
+
+**Agent 3: Copywriter**\
+**Job**: Write marketing content.
+
+It uses the strategy and creates:
+- Taglines
+- Headlines
+- Landing page copy
+- LinkedIn ads
+- Email subject lines
+
+**Output**: A structured ``CampaignReport``.
+
+**Agent 4: QA Analyst**\
+**Job**: Review everything.
+
+It evaluates:
+- Research quality
+- Strategy quality
+- Copy quality
+- Alignment between strategy and copy
+Then gives:
+- Scores (1-10)
+- Launch recommendation
+- Suggested improvements
+
+**Output**: A ``QualityReport``.
+
+**Workflow**
+The flow is:
+```
+Product Information
+        │
+        ▼
+Market Researcher
+ (Gemini Flash)
+        │
+        ▼
+Campaign Strategist
+ (Claude Sonnet)
+        │
+        ▼
+    Copywriter
+   (Claude Haiku)
+        │
+        ▼
+    QA Analyst
+  (Claude Haiku)
+        │
+        ▼
+Final Campaign Package
+```
+
+
+This is defined in:
+```
+process=Process.sequential
+```
+
+
+**Each agent:**\
+Has a different role\
+Has a different goal\
+Receives different instructions\
+Performs a different task
+
+That's the core idea of a multi-agent system.
+
+**What is CrewAI doing here?**\
+CrewAI acts as the manager.
+
+It:
+- Creates agents
+- Assigns tasks
+- Passes outputs between agents
+- Runs them in order
+- Collects final results
 
 ---
 
