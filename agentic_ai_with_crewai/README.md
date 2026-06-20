@@ -1,5 +1,5 @@
 # 🚀 Campaign Intelligence Crew
-### Building Your First AI Agent with CrewAI
+### Building AI Agent with CrewAI
 
 ---
 
